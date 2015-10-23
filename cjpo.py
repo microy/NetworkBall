@@ -28,19 +28,16 @@ balle = can.create_oval( 0, 0, 0, 0, fill = 'red' )
 Button( root, text = 'Quit', command = root.quit ).pack( side = BOTTOM, pady = 30 )
 
 # Create Internet TCP socket
-s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-s.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
+client = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+client.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 
 # Server address
-host = sys.argv[ 1 ]
-
-# Server port
-port = int( sys.argv[ 2 ] )
+server = sys.argv[ 1 ]
 
 # Network connection
 try :
 
-	s.connect( ( host, port ) )
+	client.connect( ( server, 10000 ) )
 
 except socket.error :
 
@@ -52,7 +49,7 @@ print( 'Connected to the server...' )
 # Main loop
 while 1 :
 
-	msg = s.recv( 256 )
+	msg = client.recv( 256 )
 	if not msg : break
 #	print( 'Frame {}'.format( msg ) )
 	car, sep, cdr = msg.partition( '.' )
@@ -64,7 +61,7 @@ while 1 :
 	root.update()
 
 print( 'Connection lost...' )
-s.close()
+client.close()
 
         
         

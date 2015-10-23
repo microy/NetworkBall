@@ -13,17 +13,14 @@ import sys
 import time
 
 # Set up Internet TCP socket
-lstn = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-lstn.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
+server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 
-# Server port number
-port = int( sys.argv[ 1 ] )
-
-# Bind lstn socket to this port 
-lstn.bind( ( '', port ) )
+# Bind socket to port 10000
+server.bind( ( '', 10000 ) )
 
 # Start listening for contacts from clients
-lstn.listen( 5 )
+server.listen( 16 )
 
 # Client list
 hosts = []
@@ -37,14 +34,14 @@ liste_client = {}
 # Client connection
 while len( hosts ) < N :
 	
-	clnt, ap = lstn.accept()
+	clnt, ap = server.accept()
 	client = clnt.getpeername()
-	print( 'Client {}:{} connected...'.format( *client ) )
+	print( 'Connection from {}:{}...'.format( *client ) )
 	hosts.append( client )
 	liste_client[ client ] = clnt
 
 # Close the server
-lstn.close()
+server.close()
 
 # Screen size
 sw = 1920
