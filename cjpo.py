@@ -29,6 +29,7 @@ Button( root, text = 'Quit', command = root.quit ).pack( side = BOTTOM, pady = 3
 
 # Create Internet TCP socket
 s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+s.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 
 # Server address
 host = sys.argv[ 1 ]
