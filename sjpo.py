@@ -28,12 +28,11 @@ lstn.bind(('', port))
 # start listening for contacts from clients
 lstn.listen(5)
 
-# Liste des IP valides et noms des postes correspondants
-hosts = { "10.0.0.1" : "Amandine",
-          "10.0.0.2" : "Bernard" ,
-          "10.0.0.3" : "Charlotte" ,
-          "10.0.0.4" : "Daniel" }
-N=len(hosts)
+# Liste des IP des clients
+hosts = []
+
+# Nombre de clients requis
+N=2
 
 # Clients connectés
 chosts = []
@@ -44,34 +43,29 @@ clock = thread.allocate_lock()
 
 liste_client = {}
 
-while len(chosts)<N:
+while len(hosts)<N:
 	(clnt,ap) = lstn.accept()
-	(chost,cport) = clnt.getpeername()
-	print "Demande de connexion ",chost,cport
+	client = clnt.getpeername()
+	print "Demande de connexion ",client
+	hosts.append( client )
 	# Teste si le client est un client autorisé
-	if chost in hosts:
-		hostname = hosts[chost]
-		print "Demande de connexion de %s ( %s )" % (hostname,chost)
+	if client in hosts:
+		print( 'Demande de connexion de {}:{}'.format( *client ) )
 		# Teste si le client est déjà connecté
-		if chost in chosts: 
+		if client in chosts: 
 			print "Client déjà connecté"
 			print "Demande de connexion rejetée"
 		else:
-			print "Demande acceptée sur Port %s" % cport
-			liste_client[chost]=clnt
-			chosts.append(hostname)
+			print "Demande acceptée sur Port %s" % client[1]
+			liste_client[client]=clnt
 	else:
-		print "Tentative de connexion d'un poste inconnu "+chost
+		print "Tentative de connexion d'un poste inconnu "+client[0]
 		print "Demande de connexion rejetée"
 
 print "Tous les clients sont connectés, l'application est opérationelle"
 
 # Fermeture du port d'écoute principal
 lstn.close()
-
-L=hosts.keys()
-L.sort()
-L.reverse()
 
 root = Tk()
 sw = root.winfo_screenwidth()
@@ -99,9 +93,8 @@ while 1:
       y = sh             #  défense d'aller + loin !
       v = -v               # rebond : la vitesse s'inverse
    n=0
-   for chost in L:
-      hostname = hosts[chost]
-      print "Coordonnées (%d,%d) envoyées à %s" % (x,y,hostname)
+   for chost in hosts:
+      print( 'Coordonnées ({},{}) envoyées à {}:{}'.format( x, y, *chost ) )
       clnt=liste_client[chost]
       clnt.send("%d,%d.\n" % (x-n*sw,y))
       n=n+1
