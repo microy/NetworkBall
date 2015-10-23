@@ -43,12 +43,12 @@ print "Connexion établie avec le serveur."
 while 1:
     msg = s.recv(256)
     if not msg: break 
-#    print "trame %s" % msg
+    print "trame %s" % msg
     (car,sep,cdr) = msg.partition(".")
     (sx,sep,sy) = car.partition(",")
     x = int(sx)
     y = int(sy)
-#    print "x=%d et y=%d" % (x,y)
+    print "x=%d et y=%d" % (x,y)
     can.coords(balle, x-30, y-30, x+30, y+30)
     root.update()
 
