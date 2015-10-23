@@ -78,7 +78,18 @@ while 1 :
 		
 	#	print( 'Coordonnées ({},{}) envoyées à {}:{}'.format( x, y, *chost ) )
 		clnt = liste_client[ chost ]
-		clnt.send( '{},{}.\n'.format( x-n*sw, y ) )
+		
+		# Send the coordinates
+		try : clnt.send( '{},{}.\n'.format( x-n*sw, y ) )
+		
+		# Client isn't here anymore
+		except socket.error :
+			print( 'Connection lost with {}:{}...'.format( *chost ) )
+			hosts.remove( chost )
+			del liste_client[ chost ]
+	
+	# No more clients
+	if not hosts : break
 
 	# Timer
 	time.sleep( 0.03 )
