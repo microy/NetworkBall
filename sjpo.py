@@ -12,6 +12,26 @@ import socket
 import sys
 import time
 
+#
+# Client informations
+#
+class Client( object ) :
+	
+	#
+	# Initialization
+	#
+	def __init__( self, address = None, port = None, connection = None ) :
+		
+		# IP address
+		self.address = address
+		
+		# TCP port
+		self.port = port
+		
+		# Network socket
+		self.connection = connection
+	
+
 # Set up Internet TCP socket
 server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
@@ -23,22 +43,18 @@ server.bind( ( '', 10000 ) )
 server.listen( 16 )
 
 # Client list
-hosts = []
+clients = []
 
 # Required client number
 N = 2
 
-# Client connection list
-liste_client = {}
-
 # Client connection
-while len( hosts ) < N :
+while len( clients ) < N :
 	
 	clnt, ap = server.accept()
-	client = clnt.getpeername()
-	print( 'Connection from {}:{}...'.format( *client ) )
-	hosts.append( client )
-	liste_client[ client ] = clnt
+	address, port = clnt.getpeername()
+	print( 'Connection from {}:{}...'.format( address, port ) )
+	clients.append( Client( address, port, clnt ) )
 
 # Close the server
 server.close()
@@ -71,22 +87,20 @@ while 1 :
 		v = -v               # rebond : la vitesse s'inverse
 
 	# Send ball coordinates to the clients
-	for n, chost in enumerate( hosts ) :
+	for n, client in enumerate( clients ) :
 		
 	#	print( 'Coordonnées ({},{}) envoyées à {}:{}'.format( x, y, *chost ) )
-		clnt = liste_client[ chost ]
-		
+
 		# Send the coordinates
-		try : clnt.send( '{},{}.\n'.format( x-n*sw, y ) )
+		try : client.connection.send( '{},{}.\n'.format( x-n*sw, y ) )
 		
 		# Client isn't here anymore
 		except socket.error :
-			print( 'Connection lost with {}:{}...'.format( *chost ) )
-			hosts.remove( chost )
-			del liste_client[ chost ]
+			print( 'Connection lost with {}:{}...'.format( client.address, client.port ) )
+			clients.remove( client )
 	
 	# No more clients
-	if not hosts : break
+	if not clients : break
 
 	# Timer
 	time.sleep( 0.03 )
