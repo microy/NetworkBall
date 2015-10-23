@@ -13,7 +13,6 @@
 import socket # Module réseau local TCP/IP
 import thread # Module de gestion des sous-processus
 import sys
-from Tkinter import *
 from time import sleep
 
 # Message de bienvenue...
@@ -67,9 +66,9 @@ print "Tous les clients sont connectés, l'application est opérationelle"
 # Fermeture du port d'écoute principal
 lstn.close()
 
-root = Tk()
-sw = root.winfo_screenwidth()
-sh = root.winfo_screenheight()
+
+sw = 1920
+sh = 1200
 # test
 print "screen width  =", sw
 print "screen height =", sh 
