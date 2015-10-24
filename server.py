@@ -24,13 +24,13 @@ class Ball( threading.Thread ) :
 	#
 	# Initialization
 	#
-	def __init__( self, clients ) :
+	def __init__( self ) :
 
 		# Initialize the thread
 		threading.Thread.__init__( self )
 
-		# Register the client list
-		self.clients = clients
+		# Client list
+		self.clients = []
 
 	#
 	# Thread main loop
@@ -51,6 +51,16 @@ class Ball( threading.Thread ) :
 
 		# Thread running
 		while self.running :
+			
+			# No more clients
+			if not self.clients :
+				# Ball coordinates and speed
+		#		x, y, v, dx, dv = 50, 50, 0, 12, 5
+
+				# Border
+		#		sh = sh - 100 - 30
+				time.sleep( 0.1 )
+				continue
 
 			# Horizontal move
 			if x > len(self.clients)*sw or x < 0 :     # rebond sur les parois latérales :
@@ -80,9 +90,6 @@ class Ball( threading.Thread ) :
 					client.connection.close()
 					self.clients.remove( client )
 
-			# No more clients
-			if not self.clients : break
-				
 			# Timer
 			time.sleep( 0.03 )
 
@@ -118,31 +125,25 @@ server.bind( ( '', 10000 ) )
 # Start listening for contacts from clients
 server.listen( 16 )
 
-# Client list
-clients = []
-
-# Required client number
-N = 2
-
-# Client connection
-while len( clients ) < N :
-	
-	clnt, ap = server.accept()
-	address, port = clnt.getpeername()
-	print( 'Connection from {}:{}...'.format( address, port ) )
-	clients.append( Client( address, port, clnt ) )
-
-# Close the server
-server.close()
-
 # Ball thread
+ball_thread = Ball()
+ball_thread.start()
+
 try :
-	# Ball thread
-	ball_thread = Ball( clients )
-	ball_thread.start()
+
+	# Client connection
+	while True :
+		
+		clnt, ap = server.accept()
+		address, port = clnt.getpeername()
+		print( 'Connection from {}:{}...'.format( address, port ) )
+		ball_thread.clients.append( Client( address, port, clnt ) )
+
 except :
+	
+	# Close the server
+	server.close()
 	ball_thread.running = False
 	ball_thread.join()
-	for client in clients :
-		client.close()
-		clients.remove( client )
+	for client in ball_thread.clients :
+		client.connection.close()
