@@ -52,13 +52,9 @@ class Ball( threading.Thread ) :
 		# Thread running
 		while self.running :
 			
-			# No more clients
+			# No clients
 			if not self.clients :
-				# Ball coordinates and speed
-		#		x, y, v, dx, dv = 50, 50, 0, 12, 5
-
-				# Border
-		#		sh = sh - 100 - 30
+				x, y, v, dx, dv = 50, 50, 0, 12, 5
 				time.sleep( 0.1 )
 				continue
 
