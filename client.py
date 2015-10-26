@@ -54,7 +54,9 @@ class NetworkBallClient( threading.Thread ) :
 		while self.running :
 
 			msg = self.connection.recv( 256 )
-			if not msg : break
+			if not msg :
+				self.running = False
+				break
 		#	print( 'Frame {}'.format( msg ) )
 			car, sep, cdr = msg.partition( '.' )
 			sx, sep, sy = car.partition( ',' )
@@ -97,8 +99,8 @@ class Widget( QtGui.QWidget ) :
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		
 		# Ball thread
-		self.ball_thread = NetworkBallClient( sys.argv[ 1 ], self )
-		self.ball_thread.start()
+		self.ball = NetworkBallClient( sys.argv[ 1 ], self )
+		self.ball.start()
 		
 		# Ball Position
 		self.ball_position = QtCore.QPoint()
@@ -130,8 +132,9 @@ class Widget( QtGui.QWidget ) :
 	#
 	def closeEvent( self, event ) :
 
-		self.ball_thread.running = False
-		self.ball_thread.join()
+		if self.ball.running :
+			self.ball.running = False
+			self.ball.join()
 		event.accept()
 
 
