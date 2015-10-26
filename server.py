@@ -19,7 +19,7 @@ import time
 #
 # Thread to compute the position of the ball
 #
-class Ball( threading.Thread ) :
+class NetworkBallServer( threading.Thread ) :
 	
 	#
 	# Initialization
@@ -27,7 +27,7 @@ class Ball( threading.Thread ) :
 	def __init__( self ) :
 
 		# Initialize the thread
-		threading.Thread.__init__( self )
+		super( NetworkBallServer, self ).__init__()
 
 		# Client list
 		self.clients = []
@@ -119,10 +119,10 @@ server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 server.bind( ( '', 10000 ) )
 
 # Start listening for contacts from clients
-server.listen( 16 )
+server.listen( 5 )
 
 # Ball thread
-ball_thread = Ball()
+ball_thread = NetworkBallServer()
 ball_thread.start()
 
 try :
@@ -130,10 +130,10 @@ try :
 	# Client connection
 	while True :
 		
-		clnt, ap = server.accept()
-		address, port = clnt.getpeername()
+		connection, _ = server.accept()
+		address, port = connection.getpeername()
 		print( 'Connection from {}:{}...'.format( address, port ) )
-		ball_thread.clients.append( Client( address, port, clnt ) )
+		ball_thread.clients.append( Client( address, port, connection ) )
 
 except :
 	

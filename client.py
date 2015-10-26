@@ -20,18 +20,18 @@ from PyQt4 import QtGui
 #
 # Thread to receive the ball position from the server
 #
-class Ball( threading.Thread ) :
+class NetworkBallClient( threading.Thread ) :
 	
 	#
 	# Initialization
 	#
-	def __init__( self, server, parent ) :
+	def __init__( self, server, widget ) :
 
 		# Initialize the thread
-		threading.Thread.__init__( self )
+		super( NetworkBallClient, self ).__init__()
 		
-		# Graphical component
-		self.parent = parent
+		# Graphical user interface
+		self.widget = widget
 
 		# Create Internet TCP socket
 		self.connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -42,7 +42,7 @@ class Ball( threading.Thread ) :
 		except :
 			print( 'Connection failed...' )
 			sys.exit()    
-		print( 'Connected to the server...' )
+		print( 'Connection established...' )
 
 	#
 	# Thread main loop
@@ -62,11 +62,11 @@ class Ball( threading.Thread ) :
 			y = int( sy )
 		#	print( 'x = {}  ~  y = {}'.format( x, y ) )
 			# Send the image to the widget through a signal
-			self.parent.ball_position_updated.emit( x, y )
+			self.widget.ball_position_updated.emit( x, y )
 			
 		print( 'Connection closed...' )
 		self.connection.close()
-		self.parent.close()
+		self.widget.close()
 
 
 #
@@ -97,7 +97,7 @@ class Widget( QtGui.QWidget ) :
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		
 		# Ball thread
-		self.ball_thread = Ball( sys.argv[ 1 ], self )
+		self.ball_thread = NetworkBallClient( sys.argv[ 1 ], self )
 		self.ball_thread.start()
 		
 		# Ball Position
