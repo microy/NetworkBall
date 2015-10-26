@@ -11,7 +11,6 @@
 # External dependencies
 #
 import socket
-import sys
 import threading
 import time
 
@@ -84,8 +83,8 @@ class NetworkBallServer( threading.Thread ) :
 					print( 'Connection lost...' )
 					client.close()
 					self.clients.remove( client )
-					# Initialize ball parameters
-					if self.clients : x -= sw
+					# Fix ball position
+					if self.clients and x > len( self.clients ) * sw : x -= sw
 
 			# Timer
 			time.sleep( 0.03 )
@@ -102,8 +101,8 @@ server.bind( ( '', 10000 ) )
 server.listen( 5 )
 
 # Ball thread
-ball_thread = NetworkBallServer()
-ball_thread.start()
+ball = NetworkBallServer()
+ball.start()
 
 try :
 
@@ -112,13 +111,13 @@ try :
 		
 		connection, _ = server.accept()
 		print( 'Connection from {}:{}...'.format( *connection.getpeername() ) )
-		ball_thread.clients.append( connection )
+		ball.clients.append( connection )
 
 except :
 	
 	# Close the server
 	server.close()
-	ball_thread.running = False
-	ball_thread.join()
-	for client in ball_thread.clients :
-		client.connection.close()
+	ball.running = False
+	ball.join()
+	for client in ball.clients :
+		client.close()
