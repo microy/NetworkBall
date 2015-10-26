@@ -54,7 +54,6 @@ class NetworkBallServer( threading.Thread ) :
 			
 			# No clients
 			if not self.clients :
-				x, y, v, dx, dv = 50, 50, 0, 12, 5
 				time.sleep( 0.1 )
 				continue
 
@@ -78,38 +77,19 @@ class NetworkBallServer( threading.Thread ) :
 			#	print( 'Coordonnées ({},{}) envoyées à {}:{}'.format( x, y, *chost ) )
 
 				# Send the coordinates
-				try : client.connection.send( '{},{}.\n'.format( x-n*sw, y ) )
+				try : client.send( '{},{}.\n'.format( x-n*sw, y ) )
 				
 				# Client isn't here anymore
 				except :
-					print( 'Connection lost with {}:{}...'.format( client.address, client.port ) )
-					client.connection.close()
+					print( 'Connection lost...' )
+					client.close()
 					self.clients.remove( client )
+					# Initialize ball parameters
+					if self.clients : x -= sw
 
 			# Timer
 			time.sleep( 0.03 )
 
-
-#
-# Client informations
-#
-class Client( object ) :
-	
-	#
-	# Initialization
-	#
-	def __init__( self, address, port, connection ) :
-		
-		# IP address
-		self.address = address
-		
-		# TCP port
-		self.port = port
-		
-		# Network socket
-		self.connection = connection
-		
-	
 
 # Set up Internet TCP socket
 server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -131,9 +111,8 @@ try :
 	while True :
 		
 		connection, _ = server.accept()
-		address, port = connection.getpeername()
-		print( 'Connection from {}:{}...'.format( address, port ) )
-		ball_thread.clients.append( Client( address, port, connection ) )
+		print( 'Connection from {}:{}...'.format( *connection.getpeername() ) )
+		ball_thread.clients.append( connection )
 
 except :
 	
