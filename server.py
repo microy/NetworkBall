@@ -17,97 +17,60 @@ import socket
 import time
 
 
-#
-# Class to send the ball position to the clients
-#
-class BallServer( object ) :
+# Set up the server connection
+server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
+server.bind( ( '', 10000 ) )
+server.listen( 5 )
 
-	#
-	# Initialization
-	#
-	def __init__( self ) :
+# List of connected clients
+clients = []
 
-		# Set up the server connection
-		self.server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-		self.server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
-		self.server.bind( ( '', 10000 ) )
-		self.server.listen( 5 )
-		
-		# List of connected clients
-		self.clients = []
+# Ball coordinates and speed
+x, y, v, dx, dv = 0.02, 0.04, 0, 0.006, 0.004
 
-	#
-	# Start the server
-	#
-	def Start( self ) :
-		
-		# Ball coordinates and speed
-		x, y, v, dx, dv = 0.02, 0.04, 0, 0.006, 0.004
+# Infinite service
+while True :
 
-		# Infinite service
-		while True :
-
-			# Get the list of sockets which are ready to be read through select
-			ready, _, _ = select.select( [ self.server ], [], [], 0 )
+	# New client connection
+	ready, _, _ = select.select( [ server ], [], [], 0 )
+	if ready :
+		client, _ = server.accept()
+		clients.append( client )
 			
-			# New client connection
-			if ready :
-				client, _ = self.server.accept()
-				self.clients.append( client )
-					
-			# Continue if there is no client
-			if not self.clients :
-				time.sleep( 0.1 )
-				continue
+	# Temporize, and continue if there is no client
+	if not clients :
+		time.sleep( 0.1 )
+		continue
 
-			# Compute the ball position
-			if x < 0 or x > len( self.clients ) :
-				dx = -dx
-			x += dx
-			v += dv
-			y += v 
-			if y > 0.8 :
-				y = 0.8
-				v = -v
+	# Compute the ball position
+	if x < 0 or x > len( clients ) :
+		dx = -dx
+	x += dx
+	v += dv
+	y += v 
+	if y > 0.8 :
+		y = 0.8
+		v = -v
 
-			# Loop through the client list to send the ball position
-			for n, client in enumerate( self.clients ) :
-				
-				# Send the coordinates
-				try : client.send( '{};{}\n'.format( x - n, y ) )
-				
-				# Client connection error
-				except IOError :
-					
-					# Close the client connection
-					client.close()
-					
-					# Remove the client connection from the client list
-					self.clients.remove( client )
-					
-					# Fix the ball position
-					if self.clients and x > len( self.clients ) :
-						x -= 1
-
-			# Temporization
-			time.sleep( 0.03 )
-
-
-#
-# Main application
-#
-if __name__ == '__main__' :
-
-	# Start the server
-	ball = BallServer()
-	try : ball.Start()
+	# Loop through the client list to send the ball position
+	for n, client in enumerate( clients ) :
+		
+		# Send the coordinates
+		try : client.send( '{};{}\n'.format( x - n, y ) )
+		
+		# Client connection error
+		except IOError :
 			
-	# Keyboard interruption
-	except KeyboardInterrupt :
-
-		# Close the client connections
-		for client in ball.clients :
+			# Close the client connection
 			client.close()
+			
+			# Remove the client connection from the client list
+			clients.remove( client )
+			
+			# Fix the ball position
+			if clients and x > len( clients ) :
+				x -= 1
 
-		# Close the server
-		ball.server.close()
+	# Temporization
+	time.sleep( 0.03 )
