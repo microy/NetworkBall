@@ -58,8 +58,9 @@ class BallClient( threading.Thread ) :
 			# Server is dead
 			if not message :
 				
-				# Stop the thread
+				# Close the widget
 				self.running = False
+				self.widget.close()
 				break
 				
 			# Decode the message to get the ball position
@@ -74,9 +75,6 @@ class BallClient( threading.Thread ) :
 		# Close the connection
 		self.connection.close()
 		
-		# Close the widget
-		self.widget.close()
-
 
 #
 # Widget to display the ball
