@@ -5,6 +5,8 @@
 #
 # Client side of the NetworkDemo application
 #
+# Receive the ball from the server, and display it
+#
 
 
 #
@@ -18,9 +20,9 @@ from PyQt4 import QtGui
 
 
 #
-# Thread to receive the ball position from the server
+# Class to receive the ball position from the server (threaded)
 #
-class NetworkBallClient( threading.Thread ) :
+class BallClient( threading.Thread ) :
 	
 	#
 	# Initialization
@@ -28,66 +30,66 @@ class NetworkBallClient( threading.Thread ) :
 	def __init__( self, server, widget ) :
 
 		# Initialize the thread
-		super( NetworkBallClient, self ).__init__()
+		super( BallClient, self ).__init__()
 		
 		# Graphical user interface
 		self.widget = widget
 
-		# Create Internet TCP socket
+		# Ball position
+		self.position = [ 0, 0 ]
+
+		# Connect to the server
 		self.connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 		self.connection.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
-
-		# Network connection
-		try : self.connection.connect( ( server, 10000 ) )
-		except :
-			print( 'Connection failed...' )
-			sys.exit()    
-		print( 'Connection established...' )
+		self.connection.connect( ( server, 10000 ) )
 
 	#
 	# Thread main loop
 	#
 	def run( self ) :
 		
-		# Main loop
+		# Continuously receive messages from the server
 		self.running = True
 		while self.running :
 
-			msg = self.connection.recv( 256 )
-			if not msg :
+			# Receive the message from the server
+			message = self.connection.recv( 256 )
+			
+			# Server is dead
+			if not message :
+				
+				# Stop the thread
 				self.running = False
 				break
-		#	print( 'Frame {}'.format( msg ) )
-			car, sep, cdr = msg.partition( '.' )
-			sx, sep, sy = car.partition( ',' )
-			x = int( sx )
-			y = int( sy )
-		#	print( 'x = {}  ~  y = {}'.format( x, y ) )
-			# Send the image to the widget through a signal
-			self.widget.ball_position_updated.emit( x, y )
+				
+			# Decode the message to get the ball position
+			sx, _, sy = message.partition( ';' )
+
+			# Save the ball position
+			self.position = [ float( sx ), float( sy ) ]
+
+			# Update the widget
+			self.widget.update()
 			
-		print( 'Connection closed...' )
+		# Close the connection
 		self.connection.close()
+		
+		# Close the widget
 		self.widget.close()
 
 
 #
 # Widget to display the ball
 #
-class Widget( QtGui.QWidget ) :
+class BallWidget( QtGui.QWidget ) :
 	
-	#
-	# Signal to receive the new ball position from the server
-	#
-	ball_position_updated = QtCore.pyqtSignal( int, int )
-
 	#
 	# Initialization
 	#
 	def __init__( self, parent = None ) :
 
-		# Initialize QLabel
-		super( Widget, self ).__init__( parent )
+		# Initialize the widget
+		super( BallWidget, self ).__init__( parent )
 
 		# Change the window title
 		self.setWindowTitle( 'NetworkDemo' )
@@ -99,42 +101,37 @@ class Widget( QtGui.QWidget ) :
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		
 		# Ball thread
-		self.ball = NetworkBallClient( sys.argv[ 1 ], self )
+		self.ball = BallClient( sys.argv[ 1 ], self )
 		self.ball.start()
 		
-		# Ball Position
-		self.ball_position = QtCore.QPoint()
-
-		# Connect the signal to update the ball position
-		self.ball_position_updated.connect( self.UpdateBallPosition )
-		
-	#
-	# Update the ball position
-	#
-	def UpdateBallPosition( self, x, y ) :
-		
-		self.ball_position.setX( x )
-		self.ball_position.setY( y )
-		self.update()
-
 	#
 	# Paint the ball
 	#
 	def paintEvent( self, event ) :
 		
+		# Set up the painter
 		paint = QtGui.QPainter( self )
 		paint.setRenderHint( QtGui.QPainter.Antialiasing )
 		paint.setBrush( QtCore.Qt.red )
-		paint.drawEllipse( self.ball_position, 60, 60 )
+		
+		# Get the ball position
+		position = QtCore.QPoint( self.ball.position[0] * self.size().width(),
+								  self.ball.position[1] * self.size().height() )
+								  
+		# Draw the ball
+		paint.drawEllipse( position, 60, 60 )
 
 	#
 	# Close the widget
 	#
 	def closeEvent( self, event ) :
 
+		# Stop the network connection
 		if self.ball.running :
 			self.ball.running = False
 			self.ball.join()
+			
+		# Close the widget
 		event.accept()
 
 
@@ -143,8 +140,9 @@ class Widget( QtGui.QWidget ) :
 #
 if __name__ == '__main__' :
 
+	# Start Qt application
 	application = QtGui.QApplication( sys.argv )
-	widget = Widget()
+	widget = BallWidget()
 	widget.show()
 	sys.exit( application.exec_() )
 
