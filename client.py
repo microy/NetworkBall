@@ -71,9 +71,6 @@ class BallClient( threading.Thread ) :
 
 			# Update the widget
 			self.widget.update()
-			
-		# Close the connection
-		self.connection.close()
 		
 
 #
