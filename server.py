@@ -57,7 +57,7 @@ while True :
 	for n, client in enumerate( clients ) :
 		
 		# Send the coordinates
-		try : client.send( '{};{}\n'.format( x - n, y ) )
+		try : client.send( '{};{}\n'.format( x - n, y ).encode( 'ascii' ) )
 		
 		# Client connection error
 		except IOError :

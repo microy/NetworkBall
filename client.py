@@ -64,7 +64,7 @@ class BallClient( threading.Thread ) :
 				break
 				
 			# Decode the message to get the ball position
-			sx, _, sy = message.partition( ';' )
+			sx, _, sy = message.decode( 'ascii' ).partition( ';' )
 
 			# Save the ball position
 			self.position = [ float( sx ), float( sy ) ]
