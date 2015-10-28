@@ -27,7 +27,7 @@ server.listen( 5 )
 clients = []
 
 # Ball coordinates and speed
-x, y, v, dx, dv = 0.02, 0.04, 0, 0.006, 0.004
+x, y, v, dx, dv = 0.1, 0.1, 0, 0.006, 0.006
 
 # Infinite service
 while True :
@@ -49,8 +49,8 @@ while True :
 	x += dx
 	v += dv
 	y += v 
-	if y > 0.8 :
-		y = 0.8
+	if y > 0.95 :
+		y = 0.95
 		v = -v
 
 	# Loop through the client list to send the ball position
