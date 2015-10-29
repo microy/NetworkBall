@@ -58,9 +58,8 @@ class BallClient( threading.Thread ) :
 			# Server is dead
 			if not message :
 				
-				# Close the widget
+				# Stop the client connection
 				self.running = False
-				self.widget.close()
 				break
 				
 			# Decode the message to get the ball position
@@ -71,7 +70,13 @@ class BallClient( threading.Thread ) :
 
 			# Update the widget
 			self.widget.update()
-		
+
+		# Close the connection
+		self.connection.close()
+
+		# Close the widget
+		self.widget.close()
+
 
 #
 # Widget to display the ball
@@ -95,7 +100,7 @@ class BallWidget( QtGui.QWidget ) :
 		# Set the Escape key to close the application
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		
-		# Ball thread
+		# Ball client thread
 		self.ball = BallClient( sys.argv[ 1 ], self )
 		self.ball.start()
 		
@@ -121,7 +126,7 @@ class BallWidget( QtGui.QWidget ) :
 	#
 	def closeEvent( self, event ) :
 
-		# Stop the network connection
+		# Stop the ball client
 		if self.ball.running :
 			self.ball.running = False
 			self.ball.join()
