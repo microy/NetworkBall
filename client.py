@@ -133,7 +133,7 @@ class BallWidget( QtGui.QWidget ) :
 	def closeEvent( self, event ) :
 
 		# Stop the ball client
-		if self.ball.running :
+		if self.ball.isAlive() and self.ball.running :
 			self.ball.running = False
 			self.ball.join()
 			
