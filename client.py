@@ -97,14 +97,14 @@ class BallWidget( QtGui.QWidget ) :
 		# Change the window title
 		self.setWindowTitle( 'NetworkDemo' )
 		
-		# Change the window position and size
-		self.setGeometry( 0, 0, 1920, 1200 )
-		
 		# Change the widget background color
 		self.setStyleSheet( "background-color:white;" )
 
 		# Set the Escape key to close the application
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
+		
+		# Set the F12 key to toggle fullscreen
+		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
 		
 		# Ball client thread
 		self.ball = BallClient( sys.argv[ 1 ], self )
@@ -139,6 +139,18 @@ class BallWidget( QtGui.QWidget ) :
 			
 		# Close the widget
 		event.accept()
+		
+	#
+	# Toggle widget fullscreen
+	#
+	def ToggleFullScreen( self ) :
+		
+		# Show normal
+		if self.isFullScreen() :
+			self.showNormal()
+		
+		# Show fullscreen
+		else : self.showFullScreen()
 
 
 #
