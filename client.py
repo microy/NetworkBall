@@ -100,6 +100,9 @@ class BallWidget( QtGui.QWidget ) :
 		# Change the window position and size
 		self.setGeometry( 0, 0, 1920, 1200 )
 		
+		# Change the widget background color
+		self.setStyleSheet( "background-color:white;" )
+
 		# Set the Escape key to close the application
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		
