@@ -32,28 +32,31 @@ class BallClient( threading.Thread ) :
 		# Initialize the thread
 		super( BallClient, self ).__init__()
 		
+		# Server address
+		self.server = server
+
 		# Graphical user interface
 		self.widget = widget
 
 		# Ball position
 		self.position = [ 0, 0 ]
 
-		# Connect to the server
-		self.connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-		self.connection.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
-		self.connection.connect( ( server, 10000 ) )
-
 	#
 	# Thread main loop
 	#
 	def run( self ) :
 		
+		# Connect to the server
+		connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+		connection.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
+		connection.connect( ( self.server, 10000 ) )
+
 		# Continuously receive messages from the server
 		self.running = True
 		while self.running :
 
 			# Receive the message from the server
-			message = self.connection.recv( 256 )
+			message = connection.recv( 256 )
 			
 			# Server is dead
 			if not message :
@@ -72,7 +75,7 @@ class BallClient( threading.Thread ) :
 			self.widget.update()
 
 		# Close the connection
-		self.connection.close()
+		connection.close()
 
 		# Close the widget
 		self.widget.close()
@@ -94,7 +97,7 @@ class BallWidget( QtGui.QWidget ) :
 		# Change the window title
 		self.setWindowTitle( 'NetworkDemo' )
 		
-		# Change the widget position and size
+		# Change the window position and size
 		self.setGeometry( 0, 0, 1920, 1200 )
 		
 		# Set the Escape key to close the application
