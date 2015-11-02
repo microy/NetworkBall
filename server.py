@@ -14,6 +14,7 @@
 #
 import select
 import socket
+import sys
 import time
 import threading
 
@@ -105,7 +106,9 @@ if __name__ == '__main__' :
 	server.start()
 	
 	# Wait for user key press
-	raw_input( 'Press enter to stop the server...' )
+	if sys.version_info.major < 3 :
+		raw_input( 'Press enter to stop the server...' )
+	else : input( 'Press enter to stop the server...' )
 	
 	# Stop the server
 	server.running = False
