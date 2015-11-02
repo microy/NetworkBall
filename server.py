@@ -106,7 +106,7 @@ if __name__ == '__main__' :
 	server.start()
 	
 	# Wait for user key press
-	if sys.version_info.major < 3 :
+	if sys.version_info[0] < 3 :
 		raw_input( 'Press enter to stop the server...' )
 	else : input( 'Press enter to stop the server...' )
 	
