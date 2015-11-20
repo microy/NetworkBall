@@ -1,6 +1,11 @@
-# NetworkDemo
+# NetworkBall
 
 Application to demonstrate network communications with a little animation.
+
+
+Requirements :
+
+- `PyQt4`
 
 
 Copyright (c) 2015 Michaël Roy (microygh@gmail.com)

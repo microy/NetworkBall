@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Server side of the NetworkDemo application
+# Server side of the NetworkBall application
 # Send a ball to all the clients (like a token ring)
 #
 

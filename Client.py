@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #
-# Client side of the NetworkDemo application
-# Receive the ball from the server, and display it
+# Client side of the NetworkBall application
+# Receive the ball from the server, and display it with Qt
 #
 
 # External dependencies
@@ -55,14 +55,14 @@ class BallClient( threading.Thread ) :
 		self.widget.close()
 
 # Widget to display the ball
-class BallWidget( QtGui.QWidget ) :
+class BallClientWidget( QtGui.QWidget ) :
 
 	# Initialization
 	def __init__( self, parent = None ) :
 		# Initialize the widget
-		super( BallWidget, self ).__init__( parent )
+		super( BallClientWidget, self ).__init__( parent )
 		# Change the window title
-		self.setWindowTitle( 'NetworkDemo' )
+		self.setWindowTitle( 'NetworkBall' )
 		# Change the widget background color
 		self.setStyleSheet( "background-color:white;" )
 		# Set the Escape key to close the application
@@ -104,6 +104,6 @@ class BallWidget( QtGui.QWidget ) :
 # Main application
 if __name__ == '__main__' :
 	application = QtGui.QApplication( sys.argv )
-	widget = BallWidget()
+	widget = BallClientWidget()
 	widget.show()
 	sys.exit( application.exec_() )
