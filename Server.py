@@ -15,7 +15,6 @@ import threading
 
 # Class to send the ball position to the clients
 class BallServer( threading.Thread ) :
-
 	# Server main loop
 	def run( self ) :
 		# Set up the server connection

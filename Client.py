@@ -15,7 +15,6 @@ from PyQt4 import QtGui
 
 # Class to receive the ball position from the server (threaded)
 class BallClient( threading.Thread ) :
-
 	# Initialization
 	def __init__( self, server, widget ) :
 		# Initialize the thread
@@ -26,7 +25,6 @@ class BallClient( threading.Thread ) :
 		self.widget = widget
 		# Ball position
 		self.position = [ 0, 0 ]
-
 	# Thread main loop
 	def run( self ) :
 		# Connect to the server
@@ -56,7 +54,6 @@ class BallClient( threading.Thread ) :
 
 # Widget to display the ball
 class BallClientWidget( QtGui.QWidget ) :
-
 	# Initialization
 	def __init__( self, parent = None ) :
 		# Initialize the widget
@@ -72,7 +69,6 @@ class BallClientWidget( QtGui.QWidget ) :
 		# Ball client thread
 		self.ball = BallClient( sys.argv[ 1 ], self )
 		self.ball.start()
-
 	# Paint the ball
 	def paintEvent( self, event ) :
 		# Set up the painter
@@ -80,11 +76,9 @@ class BallClientWidget( QtGui.QWidget ) :
 		paint.setRenderHint( QtGui.QPainter.Antialiasing )
 		paint.setBrush( QtCore.Qt.red )
 		# Get the ball position
-		position = QtCore.QPoint( self.ball.position[0] * self.size().width(),
-								  self.ball.position[1] * self.size().height() )
+		position = QtCore.QPoint( self.ball.position[0] * self.size().width(), self.ball.position[1] * self.size().height() )
 		# Draw the ball
 		paint.drawEllipse( position, 60, 60 )
-
 	# Close the widget
 	def closeEvent( self, event ) :
 		# Stop the ball client
@@ -93,7 +87,6 @@ class BallClientWidget( QtGui.QWidget ) :
 			self.ball.join()
 		# Close the widget
 		event.accept()
-
 	# Toggle widget fullscreen
 	def ToggleFullScreen( self ) :
 		# Show normal
