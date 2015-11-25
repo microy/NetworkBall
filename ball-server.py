@@ -40,13 +40,13 @@ class BallServer( threading.Thread ) :
 				continue
 			# Invert the ball direction if it reaches a border
 			if x < 0 or x > len( clients ) : dx = -dx
+			if y > 0.95 :
+				y = 0.95
+				v = -v
 			# Compute the ball position
 			x += dx
 			v += dv
 			y += v
-			if y > 0.95 :
-				y = 0.95
-				v = -v
 			# Loop through the client list to send the ball position
 			for n, client in enumerate( clients ) :
 				# Send the coordinates
@@ -62,8 +62,7 @@ class BallServer( threading.Thread ) :
 			# Temporization
 			time.sleep( 0.03 )
 		# Close the client connections
-		for client in clients :
-			client.close()
+		for client in clients : client.close()
 		# Close the server
 		server.close()
 
