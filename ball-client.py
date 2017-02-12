@@ -10,8 +10,9 @@
 import socket
 import sys
 import threading
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
 # Class to receive the ball position from the server (threaded)
 class BallClient( threading.Thread ) :
@@ -53,7 +54,7 @@ class BallClient( threading.Thread ) :
 		self.widget.close()
 
 # Widget to display the ball
-class BallClientWidget( QtGui.QWidget ) :
+class BallClientWidget( QtWidgets.QWidget ) :
 	# Initialization
 	def __init__( self, parent = None ) :
 		# Initialize the widget
@@ -63,9 +64,9 @@ class BallClientWidget( QtGui.QWidget ) :
 		# Change the widget background color
 		self.setStyleSheet( "background-color:white;" )
 		# Set the Escape key to close the application
-		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
+		QtWidgets.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		# Set the F12 key to toggle fullscreen
-		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
+		QtWidgets.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
 		# Ball client thread
 		self.ball = BallClient( sys.argv[ 1 ], self )
 		self.ball.start()
@@ -96,7 +97,7 @@ class BallClientWidget( QtGui.QWidget ) :
 
 # Main application
 if __name__ == '__main__' :
-	application = QtGui.QApplication( sys.argv )
+	application = QtWidgets.QApplication( sys.argv )
 	widget = BallClientWidget()
 	widget.show()
 	sys.exit( application.exec_() )
