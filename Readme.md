@@ -3,12 +3,12 @@
 Application to demonstrate network communications with a little animation.
 
 
-Requirements :
+Requirement for the clients :
 
-- `PyQt4`
+- `PyQt5`
 
 
-Copyright (c) 2015 Michaël Roy (microygh@gmail.com)
+Copyright (c) 2015-2017 Michaël Roy (microygh@gmail.com)
 
 Copyright (c) 2010-2011 Éric Busvelle
 
