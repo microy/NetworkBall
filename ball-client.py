@@ -58,6 +58,7 @@ class BallClient( threading.Thread ) :
 			# Update the widget
 			self.widget.update()
 		# Close the connection
+		connection.shutdown( socket.SHUT_RDWR )
 		connection.close()
 		# Close the widget
 		self.widget.close()

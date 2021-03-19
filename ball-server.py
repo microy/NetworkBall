@@ -62,9 +62,8 @@ class BallServer( threading.Thread ) :
 					if clients and x > len( clients ) : x -= 1
 			# Temporization
 			time.sleep( 0.03 )
-		# Close the client connections
-		for client in clients : client.close()
 		# Close the server
+		server.shutdown( socket.SHUT_RDWR )
 		server.close()
 
 # Main application
