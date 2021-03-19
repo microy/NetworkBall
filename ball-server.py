@@ -20,6 +20,7 @@ class BallServer( threading.Thread ) :
 		server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 		server.bind( ( '', 10000 ) )
 		server.listen( 5 )
+		print( 'Server on', server.getsockname() )
 		# List of connected clients
 		clients = []
 		# Ball coordinates and speed
@@ -32,6 +33,7 @@ class BallServer( threading.Thread ) :
 			if ready :
 				client, _ = server.accept()
 				clients.append( client )
+				print( 'New client', client.getpeername() )
 			# Temporize, and continue if there is no client
 			if not clients :
 				time.sleep( 0.1 )
@@ -51,6 +53,7 @@ class BallServer( threading.Thread ) :
 				try : client.send( '{};{}\n'.format( x - n, y ).encode( 'ascii' ) )
 				# Client connection error
 				except IOError :
+					print( 'Client lost' )
 					# Close the client connection
 					client.close()
 					# Remove the client connection from the client list
@@ -70,7 +73,8 @@ if __name__ == '__main__' :
 	server = BallServer()
 	server.start()
 	# Wait for user key press
-	input( 'Press <enter> to stop the server...' )
+	print( '\nPress <enter> to stop the server...\n' )
+	input()
 	# Stop the server
 	server.running = False
 	server.join()

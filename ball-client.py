@@ -31,6 +31,8 @@ class BallClient( threading.Thread ) :
 		connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 		connection.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 		connection.connect( ( self.server, 10000 ) )
+		print( 'Client :', connection.getsockname())
+		print( 'Server :', connection.getpeername())
 		# Continuously receive messages from the server
 		self.running = True
 		while self.running :
