@@ -19,7 +19,7 @@ class BallServer( threading.Thread ) :
 		server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 		server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 		server.bind( ( '', 10000 ) )
-		server.listen( 5 )
+		server.listen()
 		print( 'Server on', server.getsockname() )
 		# List of connected clients
 		clients = []
