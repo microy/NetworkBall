@@ -5,10 +5,10 @@ Application to demonstrate network communications with a little animation.
 
 Requirement for the clients :
 
-- `PyQt5`
+- `PySide2` (pip3 install PySide2)
 
 
-Copyright (c) 2015-2017 Michaël Roy (microygh@gmail.com)
+Copyright (c) 2015-2021 Michaël Roy (microygh@gmail.com)
 
 Copyright (c) 2010-2011 Éric Busvelle
 
