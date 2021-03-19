@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 #
 # Server side of the NetworkBall application
@@ -9,7 +8,6 @@
 # External dependencies
 import select
 import socket
-import sys
 import time
 import threading
 
@@ -72,8 +70,7 @@ if __name__ == '__main__' :
 	server = BallServer()
 	server.start()
 	# Wait for user key press
-	if sys.version_info[0] < 3 : raw_input( 'Press <enter> to stop the server...' )
-	else : input( 'Press <enter> to stop the server...' )
+	input( 'Press <enter> to stop the server...' )
 	# Stop the server
 	server.running = False
 	server.join()
