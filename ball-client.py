@@ -6,6 +6,7 @@
 #
 
 # External dependencies
+import os
 import socket
 import sys
 import threading
@@ -78,13 +79,13 @@ class BallClientWidget( QtWidgets.QWidget ) :
 		paint.setRenderHint( QtGui.QPainter.Antialiasing )
 		paint.setBrush( QtCore.Qt.red )
 		# Get the ball position
-		position = QtCore.QPoint( self.ball.position[0] * self.size().width(), self.ball.position[1] * self.size().height() )
+		position = QtCore.QPoint( int( self.ball.position[0] * self.size().width() ), int( self.ball.position[1] * self.size().height() ) )
 		# Draw the ball
 		paint.drawEllipse( position, 60, 60 )
 	# Close the widget
 	def closeEvent( self, event ) :
 		# Stop the ball client
-		if self.ball.isAlive() and self.ball.running :
+		if self.ball.is_alive() and self.ball.running :
 			self.ball.running = False
 			self.ball.join()
 		# Close the widget
@@ -98,6 +99,12 @@ class BallClientWidget( QtWidgets.QWidget ) :
 
 # Main application
 if __name__ == '__main__' :
+	# Remove Qt warnings
+	os.environ["QT_DEVICE_PIXEL_RATIO"] = "0"
+	os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+	os.environ["QT_SCREEN_SCALE_FACTORS"] = "1"
+	os.environ["QT_SCALE_FACTOR"] = "1"
+	# Launch application
 	application = QtWidgets.QApplication( sys.argv )
 	widget = BallClientWidget()
 	widget.show()
