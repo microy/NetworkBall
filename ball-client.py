@@ -26,12 +26,18 @@ class BallClient( threading.Thread ) :
 		self.widget = widget
 		# Ball position
 		self.position = [ 0, 0 ]
+		# Thread running
+		self.running = False
 	# Thread main loop
 	def run( self ) :
 		# Connect to the server
 		connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 		connection.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
-		connection.connect( ( self.server, 10000 ) )
+		try : connection.connect( ( self.server, 10000 ) )
+		except :
+			print( 'Cannot connect to server...' )
+			self.widget.close()
+			return
 		print( 'Client :', connection.getsockname())
 		print( 'Server :', connection.getpeername())
 		# Continuously receive messages from the server
