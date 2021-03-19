@@ -6,6 +6,7 @@
 #
 
 # External dependencies
+import ipaddress
 import os
 import socket
 import sys
@@ -110,9 +111,14 @@ if __name__ == '__main__' :
 	os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 	os.environ["QT_SCREEN_SCALE_FACTORS"] = "1"
 	os.environ["QT_SCALE_FACTOR"] = "1"
-	# Command line argument
+	# Check command line argument
 	if len( sys.argv ) != 2 :
-		print( 'Usage: ball-client.py <server_address>' )
+		print( 'Usage :', sys.argv[0], '<server_address>' )
+		exit()
+	# Validate the IP address in command line
+	try : ip = ipaddress.ip_address( sys.argv[1] )
+	except :
+		print('Server address is invalid :', sys.argv[1] )
 		exit()
 	# Launch application
 	application = QtWidgets.QApplication( sys.argv )
