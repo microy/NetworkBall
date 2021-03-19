@@ -65,9 +65,9 @@ class BallClient( threading.Thread ) :
 # Widget to display the ball
 class BallClientWidget( QtWidgets.QWidget ) :
 	# Initialization
-	def __init__( self, parent = None ) :
+	def __init__( self ) :
 		# Initialize the widget
-		super( BallClientWidget, self ).__init__( parent )
+		super( BallClientWidget, self ).__init__()
 		# Change the window title
 		self.setWindowTitle( 'NetworkBall' )
 		# Change the widget background color
