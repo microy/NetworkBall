@@ -38,8 +38,8 @@ class BallClient( threading.Thread ) :
 			print( 'Cannot connect to server...' )
 			self.widget.close()
 			return
-		print( 'Client :', connection.getsockname())
-		print( 'Server :', connection.getpeername())
+		print( 'Client :', connection.getsockname() )
+		print( 'Server :', connection.getpeername() )
 		# Continuously receive messages from the server
 		self.running = True
 		while self.running :
