@@ -110,6 +110,10 @@ if __name__ == '__main__' :
 	os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 	os.environ["QT_SCREEN_SCALE_FACTORS"] = "1"
 	os.environ["QT_SCALE_FACTOR"] = "1"
+	# Command line argument
+	if len( sys.argv ) != 2 :
+		print( 'Usage: ball-client.py <server_address>' )
+		exit()
 	# Launch application
 	application = QtWidgets.QApplication( sys.argv )
 	widget = BallClientWidget()
