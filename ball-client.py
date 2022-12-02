@@ -11,7 +11,9 @@ import os
 import socket
 import sys
 import threading
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import Qt, QKeySequence, QPainter, QShortcut
+from PySide6.QtWidgets import QApplication, QWidget
 
 # Class to receive the ball position from the server (threaded)
 class BallClient( threading.Thread ) :
@@ -62,30 +64,30 @@ class BallClient( threading.Thread ) :
 		self.widget.close()
 
 # Widget to display the ball
-class BallClientWidget( QtWidgets.QWidget ) :
+class BallClientWidget( QWidget ) :
 	# Initialization
 	def __init__( self ) :
 		# Initialize the widget
 		super( BallClientWidget, self ).__init__()
 		# Change the window title
-		self.setWindowTitle( 'NetworkBall' )
+		self.setWindowTitle( 'Network Ball' )
 		# Change the widget background color
 		self.setStyleSheet( "background-color:white;" )
 		# Set the Escape key to close the application
-		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
+		QShortcut( QKeySequence( Qt.Key_Escape ), self ).activated.connect( self.close )
 		# Set the F12 key to toggle fullscreen
-		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
+		QShortcut( QKeySequence( Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
 		# Ball client thread
 		self.ball = BallClient( sys.argv[ 1 ], self )
 		self.ball.start()
 	# Paint the ball
 	def paintEvent( self, event ) :
 		# Set up the painter
-		paint = QtGui.QPainter( self )
-		paint.setRenderHint( QtGui.QPainter.Antialiasing )
-		paint.setBrush( QtCore.Qt.red )
+		paint = QPainter( self )
+		paint.setRenderHint( QPainter.Antialiasing )
+		paint.setBrush( Qt.red )
 		# Get the ball position
-		position = QtCore.QPoint( int( self.ball.position[0] * self.size().width() ), int( self.ball.position[1] * self.size().height() ) )
+		position = QPoint( int( self.ball.position[0] * self.size().width() ), int( self.ball.position[1] * self.size().height() ) )
 		# Draw the ball
 		paint.drawEllipse( position, 60, 60 )
 	# Close the widget
@@ -115,7 +117,7 @@ if __name__ == '__main__' :
 		print('Server address is invalid :', sys.argv[1] )
 		exit()
 	# Launch application
-	application = QtWidgets.QApplication( sys.argv )
+	application = QApplication( sys.argv )
 	widget = BallClientWidget()
 	widget.show()
 	sys.exit( application.exec() )
