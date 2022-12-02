@@ -11,9 +11,7 @@ import os
 import socket
 import sys
 import threading
-from PySide2 import QtCore
-from PySide2 import QtGui
-from PySide2 import QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 # Class to receive the ball position from the server (threaded)
 class BallClient( threading.Thread ) :
@@ -74,9 +72,9 @@ class BallClientWidget( QtWidgets.QWidget ) :
 		# Change the widget background color
 		self.setStyleSheet( "background-color:white;" )
 		# Set the Escape key to close the application
-		QtWidgets.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
+		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		# Set the F12 key to toggle fullscreen
-		QtWidgets.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
+		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
 		# Ball client thread
 		self.ball = BallClient( sys.argv[ 1 ], self )
 		self.ball.start()
@@ -107,11 +105,6 @@ class BallClientWidget( QtWidgets.QWidget ) :
 
 # Main application
 if __name__ == '__main__' :
-	# Remove Qt warnings
-	os.environ["QT_DEVICE_PIXEL_RATIO"] = "0"
-	os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-	os.environ["QT_SCREEN_SCALE_FACTORS"] = "1"
-	os.environ["QT_SCALE_FACTOR"] = "1"
 	# Check command line argument
 	if len( sys.argv ) != 2 :
 		print( 'Usage :', sys.argv[0], '<server_address>' )
@@ -125,4 +118,4 @@ if __name__ == '__main__' :
 	application = QtWidgets.QApplication( sys.argv )
 	widget = BallClientWidget()
 	widget.show()
-	sys.exit( application.exec_() )
+	sys.exit( application.exec() )
