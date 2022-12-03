@@ -6,62 +6,11 @@
 #
 
 # External dependencies
-import ipaddress
-import os
-import socket
 import sys
-import threading
 from PySide6.QtCore import QPoint
 from PySide6.QtGui import Qt, QKeySequence, QPainter, QShortcut
+from PySide6.QtNetwork import QHostAddress, QTcpSocket
 from PySide6.QtWidgets import QApplication, QWidget
-
-# Class to receive the ball position from the server (threaded)
-class BallClient( threading.Thread ) :
-	# Initialization
-	def __init__( self, server, widget ) :
-		# Initialize the thread
-		super( BallClient, self ).__init__()
-		# Server address
-		self.server = server
-		# Graphical user interface
-		self.widget = widget
-		# Ball position
-		self.position = [ 0, 0 ]
-		# Thread running
-		self.running = False
-	# Thread main loop
-	def run( self ) :
-		# Connect to the server
-		connection = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-		connection.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
-		try : connection.connect( ( self.server, 10000 ) )
-		except :
-			print( 'Cannot connect to server...' )
-			self.widget.close()
-			return
-		print( 'Client :', connection.getsockname() )
-		print( 'Server :', connection.getpeername() )
-		# Continuously receive messages from the server
-		self.running = True
-		while self.running :
-			# Receive the message from the server
-			message = connection.recv( 256 )
-			# Server is dead
-			if not message :
-				# Stop the client connection
-				self.running = False
-				break
-			# Decode the message to get the ball position
-			x, _, y = message.decode( 'ascii' ).partition( ';' )
-			# Save the ball position
-			self.position = [ float( x ), float( y ) ]
-			# Update the widget
-			self.widget.update()
-		# Close the connection
-		connection.shutdown( socket.SHUT_RDWR )
-		connection.close()
-		# Close the widget
-		self.widget.close()
 
 # Widget to display the ball
 class BallClientWidget( QWidget ) :
@@ -77,9 +26,27 @@ class BallClientWidget( QWidget ) :
 		QShortcut( QKeySequence( Qt.Key_Escape ), self ).activated.connect( self.close )
 		# Set the F12 key to toggle fullscreen
 		QShortcut( QKeySequence( Qt.Key_F12 ), self ).activated.connect( self.ToggleFullScreen )
-		# Ball client thread
-		self.ball = BallClient( sys.argv[ 1 ], self )
-		self.ball.start()
+		# Network connection
+		self.connection = QTcpSocket( self )
+		self.connection.readyRead.connect( self.ReceiveMessage )
+		self.connection.disconnected.connect( self.close ) 
+		self.connection.connectToHost( QHostAddress( sys.argv[ 1 ] ), 10000 )
+		# Wait for the connection
+		if not self.connection.waitForConnected() :
+			print( 'Cannot connect to server...' )
+			exit()
+		# Initialize ball position
+		self.position = [ 0, 0 ]
+	# Receive the messages
+	def ReceiveMessage( self ) :
+		# Read the message from the server
+		message = self.connection.readLine()
+		# Decode the message to get the ball position
+		x, _, y = str( message, 'ascii' ).partition( ';' )
+		# Save the ball position
+		self.position = [ float( x ), float( y ) ]
+		# Update the widget and the ball
+		self.update()
 	# Paint the ball
 	def paintEvent( self, event ) :
 		# Set up the painter
@@ -87,17 +54,9 @@ class BallClientWidget( QWidget ) :
 		paint.setRenderHint( QPainter.Antialiasing )
 		paint.setBrush( Qt.red )
 		# Get the ball position
-		position = QPoint( int( self.ball.position[0] * self.size().width() ), int( self.ball.position[1] * self.size().height() ) )
+		position = QPoint( int( self.position[0] * self.size().width() ), int( self.position[1] * self.size().height() ) )
 		# Draw the ball
 		paint.drawEllipse( position, 60, 60 )
-	# Close the widget
-	def closeEvent( self, event ) :
-		# Stop the ball client
-		if self.ball.is_alive() and self.ball.running :
-			self.ball.running = False
-			self.ball.join()
-		# Close the widget
-		event.accept()
 	# Toggle widget fullscreen
 	def ToggleFullScreen( self ) :
 		# Show normal
@@ -109,12 +68,7 @@ class BallClientWidget( QWidget ) :
 if __name__ == '__main__' :
 	# Check command line argument
 	if len( sys.argv ) != 2 :
-		print( 'Usage :', sys.argv[0], '<server_address>' )
-		exit()
-	# Validate the IP address in command line
-	try : ip = ipaddress.ip_address( sys.argv[1] )
-	except :
-		print('Server address is invalid :', sys.argv[1] )
+		print( 'Usage :', sys.argv[0], 'server_address' )
 		exit()
 	# Launch application
 	application = QApplication( sys.argv )
