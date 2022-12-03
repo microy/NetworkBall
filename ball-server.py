@@ -16,11 +16,10 @@ class BallServer( threading.Thread ) :
 	# Server main loop
 	def run( self ) :
 		# Set up the server connection
-		server = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+		server = socket.socket( socket.AF_INET6, socket.SOCK_STREAM )
 		server.setsockopt( socket.SOL_SOCKET, socket.SO_REUSEADDR, 1 )
 		server.bind( ( '', 10000 ) )
 		server.listen()
-		print( 'Server on', server.getsockname() )
 		# List of connected clients
 		clients = []
 		# Ball coordinates and speed
@@ -33,7 +32,7 @@ class BallServer( threading.Thread ) :
 			if ready :
 				client, _ = server.accept()
 				clients.append( client )
-				print( 'New client', client.getpeername() )
+				print( 'New client ({} : {})'.format( *client.getpeername()[:2] ) )
 			# Temporize, and continue if there is no client
 			if not clients :
 				time.sleep( 0.1 )
